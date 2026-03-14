@@ -12,7 +12,7 @@ class ProxyBasedTrainer(BaseTrainer):
         # build model
         proxy_cfg = {
             'feat_dim': self.config['model']['backbone']['embed_dim'],
-            'subj_num': len(self.train_loader._dataloader.dataset.sorted_subjs),
+            'subj_num': len(self.train_loader._dataloader.dataset),
         }
         self.config['model']['head'].update(proxy_cfg)
         super().init_model()
@@ -26,7 +26,7 @@ class ProxyBasedTrainer(BaseTrainer):
 
         self.optimizer.zero_grad()
         # forward
-        with torch.autocast(device_type='cuda', dtype=torch.float16, enabled=self.amp):
+        with torch.cuda.amp.autocast(enabled=self.amp):
             feats = self.model.backbone(data)
             loss = self.model.head(feats, labels)
 

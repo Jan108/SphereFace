@@ -1,0 +1,48 @@
+data:
+  train:
+    dataset:
+      type: PetFace
+      name: petface
+      root_dir: /mnt/data/afarec/data/PetFace/images
+      img_list: /mnt/data/afarec/data/PetFace/split/all/train.csv
+      test_mode: false
+      augment_params: {
+        horizontal_flip: true, lowres_prob: 0.,
+        crop_prob: 0., photo_prob: 0.,
+      }
+    dataloader: {
+      type: DataLoader, batch_size: 1,
+      shuffle: true, drop_last: true,
+      num_workers: 1, pin_memory: true,
+    }
+model:
+  backbone:
+    type: sfnet20
+    embed_dim: 512
+  head:
+    type: SphereFace
+    s: 64
+    m: 1.7
+    feat_dim: -1
+    subj_num: -1
+trainer:
+  type: ProxyBasedTrainer
+  # steps, gradient_clip, optimizer, scheduler
+  amp: true
+  max_grad_norm: 100.0
+  # steps
+  val_intvl: 10000
+  ckpt_steps: [60000, 120000, 180000, 240000]
+  save_steps: [232000, 234000, 236000, 238000, 240000]
+  optimizer:
+    type: SGD
+    lr: 0.1
+    momentum: 0.9
+    weight_decay: 0.0005
+  scheduler:
+    type: MultiStepLR
+    milestones: [80000, 140000, 200000, 240000]
+    gamma: 0.1  
+  # log
+  train_log: {name: 'train', info_intvl: 200, fmt: '6.3f'}
+  val_log: {name: 'val', info_intvl: 1, fmt: '6.3f'}

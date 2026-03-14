@@ -64,7 +64,10 @@ class BaseTrainer():
         args = self.config['data']
         train_loader = build_dataloader(args['train'])
         self.train_loader = IterLoader(train_loader)
-        self.val_loaders = build_dataloader(args['val'])
+        if 'val' in args:
+            self.val_loaders = build_dataloader(args['val'])
+        else:
+            self.val_loaders = []
 
     def init_model(self):
         model_cfg = self.config['model']

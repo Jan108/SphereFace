@@ -1,4 +1,21 @@
- &nbsp;
+# Fine-Tune SphereFace on PetFace
+
+This repository is used in the [AFaRec System](https://github.com/Jan108/AFaRec) to train and predict SphereFace.
+
+## Reproduction Quicksteps
+Clone Repo and use Python 3.7 with conda:
+1. Run ```conda env create -f environment.yml```
+2. Alter .venv/lib/python3.10/site-packages/mxnet/numpy/utils.py:37 to bool = bool
+3. Prepare PetFace data: Use [AFaRec datasetup PetFace](https://github.com/Jan108/AFaRec/blob/main/data/petface.py#L5)/
+4. Alter the Path in [train_sphereface.sh](train_arcface.sh)
+5. Train: ```bash train_sphereface.sh```
+
+
+
+Below is the old README.
+
+
+&nbsp;
  &nbsp;
   
 <div align="center">
