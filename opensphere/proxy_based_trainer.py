@@ -31,7 +31,7 @@ class ProxyBasedTrainer(BaseTrainer):
             loss = self.model.head(feats, labels)
 
         if self.step % 25 == 0:
-            self.train_logger.logger.info(f'loss: {loss.__dict__()}')
+            self.train_logger.logger.info(f'loss: {loss.__dict__}')
 
         # backward
         self.scaler.scale(loss).backward()
