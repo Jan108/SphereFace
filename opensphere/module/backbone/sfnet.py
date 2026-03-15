@@ -205,7 +205,7 @@ class SFNet(nn.Module):
         log_inf(x, 5)
         x = self.dropout(x)
         log_inf(x, 6)
-        x = x.to(torch.float64)
+        x = x.to(torch.float32)
         x = self.fc(x)
         log_inf(x, 7)
         x = self.features(x)
