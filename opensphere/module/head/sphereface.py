@@ -28,7 +28,7 @@ class SphereFace(nn.Module):
     def forward(self, x, y):
 
         def log_inf(t, n):
-            print(f'head {n}: inf {torch.isinf(t).any():<5}; nan {torch.isnan(t).any():<5}')
+            print(f'backbone {n}: inf {" True" if torch.isinf(t).any() else "False"}; nan {" True" if torch.isnan(t).any() else "False"}')
 
         log_inf(x, 'x')
         log_inf(y, 'y')
