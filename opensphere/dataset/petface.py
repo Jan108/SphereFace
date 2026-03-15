@@ -21,7 +21,7 @@ class PetFace(Dataset):
         self.transform = transforms.Compose([
             transforms.RandomHorizontalFlip(),
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0, 0, 0], std=[1, 1, 1]),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
         ])
         self.name = name
 
@@ -49,7 +49,7 @@ class PetFace(Dataset):
         label = self.label_list[index]
         img = Image.open(path_img).convert('RGB').crop((28, 28, 196, 169)).resize((112, 112), Image.LANCZOS)
 
-        sample = self.transform(img)
+        sample = self.transform(img).to(torch.float32)
         label = torch.tensor(label, dtype=torch.int64)
         return sample, label
 
