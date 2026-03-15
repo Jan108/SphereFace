@@ -170,7 +170,7 @@ class BaseTrainer():
         if self.ckpt_path is not None:
             self.load_checkpoint()
         # main loop
-        while self.step <= self.max_step:
+        while self.step <= self.max_step and self.epoch <= 100:
             # update step
             self.step += 1
             self.epoch = self.train_loader.epoch
@@ -193,3 +193,10 @@ class BaseTrainer():
                 model_path = osp.join(self.ckpt_dir, f'model_{self.step}.pth')
                 torch.save(self.model.state_dict(), model_path)
                 print(f'save model to {model_path}')
+
+        ckpt_path = osp.join(self.ckpt_dir, f'ckpt_{self.step}.pth')
+        torch.save(self.state_dict(), ckpt_path)
+        print(f'save checkpoint to {ckpt_path}')
+        model_path = osp.join(self.ckpt_dir, f'model_{self.step}.pth')
+        torch.save(self.model.state_dict(), model_path)
+        print(f'save model to {model_path}')
