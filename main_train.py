@@ -12,11 +12,11 @@ import torch.multiprocessing as mp
 from glob import glob
 from opensphere.utils.build_helper import build_from_args
 
-#import random
-#import numpy
-#random.seed(0)
-#numpy.random.seed(0)
-#torch.manual_seed(0)
+import random
+import numpy
+random.seed(0)
+numpy.random.seed(0)
+torch.manual_seed(0)
 
 torch.backends.cudnn.benchmark = True
 torch.backends.cudnn.deterministic = True

@@ -17,7 +17,7 @@ data:
     }
 model:
   backbone:
-    type: sfnet20
+    type: sfnet64
     embed_dim: 512
   head:
     type: SphereFace

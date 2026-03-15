@@ -4,7 +4,7 @@ data:
       type: PetFace
       name: petface
       root_dir: /u/jb64vyso/afarec/data/PetFace_script/images
-      img_list: /u/jb64vyso/afarec/data/PetFace_script/split/all/train.csv
+      img_list: /u/jb64vyso/afarec/data/PetFace_script/split/birds/train.csv
       test_mode: false
       augment_params: {
         horizontal_flip: true, lowres_prob: 0.,
@@ -17,7 +17,7 @@ data:
     }
 model:
   backbone:
-    type: sfnet20
+    type: sfnet64
     embed_dim: 512
   head:
     type: SphereFace
