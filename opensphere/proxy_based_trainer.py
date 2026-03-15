@@ -26,6 +26,10 @@ class ProxyBasedTrainer(BaseTrainer):
 
         self.optimizer.zero_grad()
         # forward
+
+        if self.step % 25 == 0:
+            self.train_logger.logger.info(f'data: {data.__dict__}')
+            self.train_logger.logger.info(f'labels: {labels.__dict__}')
         with torch.cuda.amp.autocast(enabled=self.amp):
             feats = self.model.backbone(data)
             loss = self.model.head(feats, labels)
