@@ -20,10 +20,6 @@ class ProxyBasedTrainer(BaseTrainer):
     def train_step(self):
         # load data
         data, labels = next(self.train_loader)
-
-        if self.step % 25 == 0:
-            self.train_logger.logger.info(f'loader data: {data.__dict__}; {data}')
-            self.train_logger.logger.info(f'loader labels: {labels.__dict__}; {labels}')
         data, labels = data.to(self.rank), labels.to(self.rank)
 
         self.model.train_mode()
@@ -31,14 +27,12 @@ class ProxyBasedTrainer(BaseTrainer):
         self.optimizer.zero_grad()
         # forward
 
-        if self.step % 25 == 0:
-            self.train_logger.logger.info(f'data: {data.__dict__}; {data}')
-            self.train_logger.logger.info(f'labels: {labels.__dict__}; {labels}')
         with torch.cuda.amp.autocast(enabled=self.amp):
             feats = self.model.backbone(data)
             loss = self.model.head(feats, labels)
 
         if self.step % 25 == 0:
+            self.train_logger.logger.info(f'feats: {feats.__dict__}, {feats}')
             self.train_logger.logger.info(f'loss: {loss.__dict__}, {loss}')
 
         # backward
