@@ -25,8 +25,7 @@ class ProxyBasedTrainer(BaseTrainer):
         data, labels = data.to(self.rank), labels.to(self.rank)
 
         def log_stat(t, name):
-            self.train_logger.logger.info(f'{name} min: {torch.min(t)}, max: {torch.max(t)}, mean: {torch.mean(t)}, '
-                                      f'std: {torch.std(t)}; any inf: {torch.isinf(t).any()}, any nan: {torch.isnan(t).any()}')
+            self.train_logger.logger.info(f'{name} min: {torch.min(t)}, max: {torch.max(t)}, any inf: {torch.isinf(t).any()}, any nan: {torch.isnan(t).any()}')
 
         log_stat(data, 'data')
         log_stat(labels, 'labels')
