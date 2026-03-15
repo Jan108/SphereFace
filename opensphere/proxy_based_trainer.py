@@ -1,5 +1,3 @@
-from time import sleep
-
 import torch
 
 from .model import Model
@@ -24,28 +22,13 @@ class ProxyBasedTrainer(BaseTrainer):
         data, labels = next(self.train_loader)
         data, labels = data.to(self.rank), labels.to(self.rank)
 
-        def log_stat(t, name):
-            if self.step % 25 == 0:
-                self.train_logger.logger.info(f'{name} min: {torch.min(t)}, max: {torch.max(t)}, any inf: {torch.isinf(t).any()}, any nan: {torch.isnan(t).any()}')
-
-        log_stat(data, 'data')
-        log_stat(labels, 'labels')
-
         self.model.train_mode()
 
         self.optimizer.zero_grad()
         # forward
-
-        # with torch.cuda.amp.autocast(enabled=self.amp):
-        with torch.cuda.amp.autocast(enabled=False):
+        with torch.cuda.amp.autocast(enabled=self.amp):
             feats = self.model.backbone(data)
-            log_stat(feats, 'backbone')
-
             loss = self.model.head(feats, labels)
-            log_stat(loss, 'head')
-
-        if self.step % 25 == 0:
-            self.train_logger.logger.info('='*100)
 
         # backward
         self.scaler.scale(loss).backward()
