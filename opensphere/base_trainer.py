@@ -37,7 +37,7 @@ class BaseTrainer():
     def init_settings(self):
         args = self.config['trainer']
         self.step = 0
-        self.amp = args['amp']
+        self.amp = False
         self.val_intvl = args['val_intvl']
         self.ckpt_steps = args['ckpt_steps']
         self.save_steps = args['save_steps']
