@@ -22,25 +22,30 @@ class ProxyBasedTrainer(BaseTrainer):
     def train_step(self):
         # load data
         data, labels = next(self.train_loader)
-        d0 = data.tolist()[0]
-        l0 = labels.tolist()[0]
         data, labels = data.to(self.rank), labels.to(self.rank)
+
+        def log_stat(t, name):
+            self.train_logger.logger.info(f'{name} min: {torch.min(t)}, max: {torch.max(t)}, mean: {torch.mean(t)}, '
+                                      f'std: {torch.std(t)}; any inf: {torch.isinf(t).any()}, any nan: {torch.isnan(t).any()}')
+
+        log_stat(data, 'data')
+        log_stat(labels, 'labels')
 
         self.model.train_mode()
 
         self.optimizer.zero_grad()
         # forward
 
-        with torch.cuda.amp.autocast(enabled=self.amp):
-            data: torch.Tensor
+        # with torch.cuda.amp.autocast(enabled=self.amp):
+        with torch.cuda.amp.autocast(enabled=False):
             feats = self.model.backbone(data)
-            f0 = feats.tolist()[0]
+            log_stat(feats, 'backbone')
 
-            self.train_logger.logger.info(f'data: {d0}, label: {l0}, feat: {f0}')
             self.train_logger.logger.info('='*100)
             sleep(10)
 
             loss = self.model.head(feats, labels)
+            log_stat(loss, 'head')
 
         # backward
         self.scaler.scale(loss).backward()
