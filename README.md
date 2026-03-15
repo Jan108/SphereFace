@@ -5,6 +5,7 @@ This repository is used in the [AFaRec System](https://github.com/Jan108/AFaRec)
 ## Reproduction Quicksteps
 Clone Repo and use Python 3.7 with conda:
 1. Run ```conda env create -f environment.yml```
+2. Run ```pip install torch==1.9.0+cu111 torchvision==0.10.0+cu111 torchaudio==0.9.0 -f https://download.pytorch.org/whl/torch_stable.html```
 3. Prepare PetFace data: Use [AFaRec datasetup PetFace](https://github.com/Jan108/AFaRec/blob/main/data/petface.py#L5)/
 4. Alter the Path in [train_sphereface.sh](train_arcface.sh)
 4. Alter the Path in [configs](config/afarec/sfnet20_all.yml)
