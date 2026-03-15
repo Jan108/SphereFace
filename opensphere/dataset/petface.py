@@ -50,7 +50,7 @@ class PetFace(Dataset):
         img = Image.open(path_img).convert('RGB').crop((28, 28, 196, 169)).resize((112, 112), Image.LANCZOS)
 
         sample = self.transform(img)
-        label = torch.tensor(label, dtype=torch.int32)
+        label = torch.tensor(label, dtype=torch.int64)
         return sample, label
 
     def __len__(self):
