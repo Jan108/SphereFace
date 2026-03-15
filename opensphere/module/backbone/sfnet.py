@@ -188,15 +188,27 @@ class SFNet(nn.Module):
 
     def _forward_impl(self, x: Tensor) -> Tensor:
 
+        def log_inf(t, n):
+            print(f'backbone {n}: inf {torch.isinf(t).any():<5}; nan {torch.isnan(t).any():<5}')
+
+        log_inf(x, 0)
         x = self.layer1(x)
+        log_inf(x, 1)
         x = self.layer2(x)
+        log_inf(x, 2)
         x = self.layer3(x)
+        log_inf(x, 3)
         x = self.layer4(x)
+        log_inf(x, 4)
 
         x = torch.flatten(x, 1)
+        log_inf(x, 5)
         x = self.dropout(x)
+        log_inf(x, 6)
         x = self.fc(x)
+        log_inf(x, 7)
         x = self.features(x)
+        log_inf(x, 8)
 
         return x
 

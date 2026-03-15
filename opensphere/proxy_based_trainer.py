@@ -55,5 +55,6 @@ class ProxyBasedTrainer(BaseTrainer):
             'grad_norm': grad_norm,
             'mag_mean': mag_mean.item(),
             'mag_std': mag_std.item(),
+            'epoch': self.train_loader.epoch,
         }
         self.train_logger.add(screen_msgs, step=self.step)
