@@ -90,14 +90,27 @@ if __name__ == '__main__':
     # get arguments and config
     config = get_config_from_args()
 
-    # find an available port 
-    with socket.socket() as sock:
-        sock.bind(('', 0))
-        port = sock.getsockname()[1]
-
-    # start multiple processes
     world_size = len(config['trainer']['device_ids'].split(','))
-    mp.spawn(
-        main_worker, args=(world_size, port, config),
-        nprocs=world_size, join=True,
-    )
+    if world_size < 2:
+        rank = config['trainer']['device_ids']
+        print(f"Process {rank}: CUDA_VISIBLE_DEVICES={os.environ.get('CUDA_VISIBLE_DEVICES')}")
+        print(f"Process {rank}: torch.cuda.current_device()={torch.cuda.current_device()}")
+        print(f"Process {rank}: torch.cuda.device_count()={torch.cuda.device_count()}")
+        torch.cuda.set_device(rank)
+        print(f"Process {rank}: After set_device, torch.cuda.current_device()={torch.cuda.current_device()}")
+        # init trainer and run
+        trainer_args = {'type': config['trainer']['type'], 'config': config}
+        trainer = build_from_args(trainer_args, 'opensphere')
+        trainer.run()
+    else:
+        # find an available port
+        with socket.socket() as sock:
+            sock.bind(('', 0))
+            port = sock.getsockname()[1]
+
+        # start multiple processes
+        world_size = len(config['trainer']['device_ids'].split(','))
+        mp.spawn(
+            main_worker, args=(world_size, port, config),
+            nprocs=world_size, join=True,
+        )
