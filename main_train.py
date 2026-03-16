@@ -89,8 +89,6 @@ if __name__ == '__main__':
         sock.bind(('', 0))
         port = sock.getsockname()[1]
 
-    torch.cuda.set_device('cuda:1')
-
     # start multiple processes
     world_size = len(config['trainer']['device_ids'].split(','))
     mp.spawn(
