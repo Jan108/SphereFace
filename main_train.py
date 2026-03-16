@@ -65,6 +65,8 @@ def get_config_from_args():
     return config
 
 def main_worker(rank, world_size, port, config):
+    torch.cuda.set_device(rank)
+
     # init processes
     dist.init_process_group(
         backend='nccl',
