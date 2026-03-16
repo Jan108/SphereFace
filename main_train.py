@@ -18,8 +18,8 @@ random.seed(0)
 numpy.random.seed(0)
 torch.manual_seed(0)
 
-# torch.backends.cudnn.benchmark = False
-# torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = True
+torch.backends.cudnn.deterministic = True
 
 def get_config_from_args():
     # get arguments
@@ -65,13 +65,6 @@ def get_config_from_args():
     return config
 
 def main_worker(rank, world_size, port, config):
-    print(f'Distributed training: rank={rank}, world_size={world_size}, port={port}')
-    print(f"Process {rank}: CUDA_VISIBLE_DEVICES={os.environ.get('CUDA_VISIBLE_DEVICES')}")
-    print(f"Process {rank}: torch.cuda.current_device()={torch.cuda.current_device()}")
-    print(f"Process {rank}: torch.cuda.device_count()={torch.cuda.device_count()}")
-    torch.cuda.set_device(rank)
-    print(f"Process {rank}: After set_device, torch.cuda.current_device()={torch.cuda.current_device()}")
-
     # init processes
     dist.init_process_group(
         backend='nccl',
@@ -91,28 +84,14 @@ if __name__ == '__main__':
     # get arguments and config
     config = get_config_from_args()
 
-    world_size = len(config['trainer']['device_ids'].split(','))
-    if world_size < 2:
-        print('Not distributed training.')
-        rank = config['trainer']['device_ids']
-        print(f"Process {rank}: CUDA_VISIBLE_DEVICES={os.environ.get('CUDA_VISIBLE_DEVICES')}")
-        print(f"Process {rank}: torch.cuda.current_device()={torch.cuda.current_device()}")
-        print(f"Process {rank}: torch.cuda.device_count()={torch.cuda.device_count()}")
-        torch.cuda.set_device(rank)
-        print(f"Process {rank}: After set_device, torch.cuda.current_device()={torch.cuda.current_device()}")
-        # init trainer and run
-        trainer_args = {'type': config['trainer']['type'], 'config': config}
-        trainer = build_from_args(trainer_args, 'opensphere')
-        trainer.run()
-    else:
-        # find an available port
-        with socket.socket() as sock:
-            sock.bind(('', 0))
-            port = sock.getsockname()[1]
+    # find an available port
+    with socket.socket() as sock:
+        sock.bind(('', 0))
+        port = sock.getsockname()[1]
 
-        # start multiple processes
-        world_size = len(config['trainer']['device_ids'].split(','))
-        mp.spawn(
-            main_worker, args=(world_size, port, config),
-            nprocs=world_size, join=True,
-        )
+    # start multiple processes
+    world_size = len(config['trainer']['device_ids'].split(','))
+    mp.spawn(
+        main_worker, args=(world_size, port, config),
+        nprocs=world_size, join=True,
+    )
