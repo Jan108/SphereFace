@@ -65,7 +65,11 @@ def get_config_from_args():
     return config
 
 def main_worker(rank, world_size, port, config):
+    print(f"Process {rank}: CUDA_VISIBLE_DEVICES={os.environ.get('CUDA_VISIBLE_DEVICES')}")
+    print(f"Process {rank}: torch.cuda.current_device()={torch.cuda.current_device()}")
+    print(f"Process {rank}: torch.cuda.device_count()={torch.cuda.device_count()}")
     torch.cuda.set_device(rank)
+    print(f"Process {rank}: After set_device, torch.cuda.current_device()={torch.cuda.current_device()}")
 
     # init processes
     dist.init_process_group(
