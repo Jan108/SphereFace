@@ -170,7 +170,7 @@ class BaseTrainer():
         if self.ckpt_path is not None:
             self.load_checkpoint()
         # main loop
-        while self.step <= self.max_step and self.train_loader.epoch <= 50:
+        while self.step <= self.max_step and self.train_loader.epoch <= 75:
             # update step
             self.step += 1
             self.epoch = self.train_loader.epoch
