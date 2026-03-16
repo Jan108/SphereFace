@@ -137,7 +137,7 @@ class BaseTrainer():
     def load_checkpoint(self):
         # load checkpoint
         map_location = {'cuda:%d' % 0: 'cuda:%d' % self.rank}
-        ckpt_dict = torch.load(self.ckpt_path, map_location=map_location)
+        ckpt_dict = torch.load(self.ckpt_path, map_location='cuda')
         self.load_state_dict(ckpt_dict)
         # load dataloader
         self.train_loader.set_epoch(self.epoch)
