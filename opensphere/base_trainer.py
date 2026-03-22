@@ -54,8 +54,9 @@ class BaseTrainer():
             self.ckpt_path = ckpt_paths[-1]
         else:
             # from scratch
-            timestamp = time.strftime('%Y%m%d_%H%M%S')
-            self.proj_dir = osp.join(args['proj_dir'], timestamp)
+            # timestamp = time.strftime('%Y%m%d_%H%M%S')
+            # self.proj_dir = osp.join(args['proj_dir'], timestamp)
+            self.proj_dir = args['proj_dir']
             self.ckpt_path = None
             self.ckpt_dir = osp.join(self.proj_dir, 'checkpoint')
 
