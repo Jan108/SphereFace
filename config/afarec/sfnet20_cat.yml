@@ -3,8 +3,8 @@ data:
     dataset:
       type: PetFace
       name: petface
-      root_dir: /u/jb64vyso/afarec/data/PetFace_script/images
-      img_list: /u/jb64vyso/afarec/data/PetFace_script/split/cat/train.csv
+      root_dir: /afarec/data/PetFace_script/images
+      img_list: /afarec/data/PetFace_script/split/cat/train.csv
       test_mode: false
       augment_params: {
         horizontal_flip: true, lowres_prob: 0.,
