@@ -5,6 +5,15 @@ ROOT_DIR='/mnt/data/afarec/code/face_recognition/SphereFace'
 
 for backbone in "20" "64"; do
   for cls in "all" "bird" "cat" "dog" "small_animals"; do
+    if [ $cls = "all" ] && [ $backbone = "20" ]; then
+        continue
+    fi
+    if [ $cls = "bird" ] && [ $backbone = "20" ]; then
+        continue
+    fi
+    if [ $cls = "small_animals" ] && [ $backbone = "20" ]; then
+        continue
+    fi
     echo "Start training for SphereFace with SFNet${backbone} for class ${cls}"
     PYTHONPATH=$ROOT_DIR:$PYTHONPATH \
       CUDA_VISIBLE_DEVICES=0 \
