@@ -35,6 +35,7 @@ if __name__ == '__main__':
     model_dict = torch.load(model_path)
     model.load_state_dict(model_dict)
     model.eval_mode()
+    feat = model.backbone(img)
 
     # inference
     image_paths = sorted(glob(osp.join(args.image_dir, '*.*')))
