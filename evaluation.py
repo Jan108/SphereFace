@@ -35,21 +35,15 @@ def verification(params):
     model.eval_mode()
 
     def net(img):
-        a = model.backbone(img)
-        b = model.backbone(torch.flip(img, [3]))
-        print(a)
-        print(b)
         feat = model.get_feature(img)
-        print(feat)
         feat = model.head.f_wrapping(feat)
-        print(feat)
         return model.head.f_fusing(feat)
 
     # Load data
     dataset = PetFaceVerification(params.img_path, params.img_verification)
     test_loader = DataLoader(
         dataset=dataset,
-        batch_size=1,
+        batch_size=64,
         num_workers=4,
         pin_memory=True,
         drop_last=False,
@@ -60,46 +54,39 @@ def verification(params):
     sim_list = []
     label_list = []
     for img1, img2, label in tqdm(test_loader, desc='Test image pairs'):
-        print(img1)
-        # print(img2)
         vec1 = F.normalize(net(img1.to(device)))
-        # vec2 = F.normalize(net(img2.to(device)))
-        print(vec1)
-        # print(vec2)
-        raise
+        vec2 = F.normalize(net(img2.to(device)))
+
         sim = nn.CosineSimilarity()(vec1, vec2).cpu().data.numpy().tolist()
-        print(sim)
-        print(label)
         sim_list += sim
         label_list += label.cpu().data.numpy().tolist()
-        raise
 
     pd.DataFrame(
         {'file1': dataset.image1_list, 'file2': dataset.image2_list,
          'sim': sim_list, 'label': label_list}).to_csv(
         os.path.join(params.proj_dir, 'verification.csv'), index=False)
-    #
-    # # Test latency
-    # test_loader_latency = DataLoader(
-    #     dataset=dataset,
-    #     batch_size=1,
-    #     num_workers=4,
-    #     pin_memory=True,
-    #     drop_last=False,
-    #     shuffle=False
-    # )
-    # inf_times = []
-    # for img1, img2, label in tqdm(islice(test_loader_latency, params.latency_test),
-    #                               desc='Test image pairs latency', total=params.latency_test):
-    #     start_time = datetime.now()
-    #     F.normalize(net(img1.to(device)))
-    #     F.normalize(net(img2.to(device)))
-    #     end_time = datetime.now()
-    #     inf_times.append(end_time - start_time)
-    # avg_time = sum(inf_times, timedelta()) / len(inf_times)
-    # print(f'Inference for {params.proj_dir} took {avg_time}')
-    # with open(os.path.join(params.proj_dir, 'timing.txt'), 'w') as file:
-    #     file.write(str(avg_time))
+
+    # Test latency
+    test_loader_latency = DataLoader(
+        dataset=dataset,
+        batch_size=1,
+        num_workers=4,
+        pin_memory=True,
+        drop_last=False,
+        shuffle=False
+    )
+    inf_times = []
+    for img1, img2, label in tqdm(islice(test_loader_latency, params.latency_test),
+                                  desc='Test image pairs latency', total=params.latency_test):
+        start_time = datetime.now()
+        F.normalize(net(img1.to(device)))
+        F.normalize(net(img2.to(device)))
+        end_time = datetime.now()
+        inf_times.append(end_time - start_time)
+    avg_time = sum(inf_times, timedelta()) / len(inf_times)
+    print(f'Inference for {params.proj_dir} took {avg_time}')
+    with open(os.path.join(params.proj_dir, 'timing.txt'), 'w') as file:
+        file.write(str(avg_time))
 
 
 def identification(params):
@@ -172,4 +159,4 @@ if __name__ == "__main__":
     parser.add_argument("--latency_test", type=int, default=1000, help="Amount of images for the latency test")
     args = parser.parse_args()
     verification(args)
-    # identification(args)
+    identification(args)
