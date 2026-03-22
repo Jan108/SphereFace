@@ -11,7 +11,7 @@ data:
         crop_prob: 0., photo_prob: 0.,
       }
     dataloader: {
-      type: DataLoader, batch_size: 512,
+      type: DataLoader, batch_size: 256,
       shuffle: true, drop_last: true,
       num_workers: 4, pin_memory: true,
     }
@@ -32,8 +32,8 @@ trainer:
   max_grad_norm: 100.0
   # steps
   val_intvl: 10000
-  ckpt_steps: [60000, 120000, 180000, 240000]
-  save_steps: [60000, 120000, 180000, 240000]
+  ckpt_steps: [30000, 60000, 90000, 120000]
+  save_steps: [30000, 60000, 90000, 120000]
   optimizer:
     type: SGD
     lr: 0.1
