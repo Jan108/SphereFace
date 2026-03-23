@@ -11,7 +11,7 @@ data:
         crop_prob: 0., photo_prob: 0.,
       }
     dataloader: {
-      type: DataLoader, batch_size: 256,
+      type: DataLoader, batch_size: 128,
       shuffle: true, drop_last: true,
       num_workers: 4, pin_memory: true,
     }
