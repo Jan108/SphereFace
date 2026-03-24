@@ -27,10 +27,12 @@ def verification(params):
         config = yaml.load(f, yaml.SafeLoader)
     # get model
     model = Model(config['model'])
-    model_path = glob.glob(f'{params.proj_dir}/checkpoint/model_*.pth')[0]
+    model_path = f'{params.proj_dir}/checkpoint/model_{params.model_steps}.pth'
+    if not os.path.exists(model_path):
+        print(f'No model found for {params.model_steps}, load first found matching "model_*.pth". Searched for: {model_path}')
+        model_path = glob.glob(f'{params.proj_dir}/checkpoint/model_*.pth')[0]
     print(f'Loading model from {model_path}')
-    model.load_state_dict(torch.load(model_path))
-    model_dict = torch.load(model_path)
+    model_dict = torch.load(model_path, map_location='cuda')
     model.load_state_dict(model_dict)
     model.eval_mode()
 
@@ -83,7 +85,7 @@ def verification(params):
         F.normalize(net(img2.to(device)))
         end_time = datetime.now()
         inf_times.append(end_time - start_time)
-    avg_time_pair = sum(inf_times, start=timedelta()) / len(inf_times)
+    avg_time_pair = sum(inf_times, timedelta()) / len(inf_times)
 
     inf_times = []
     for img1, img2, label in tqdm(islice(test_loader_latency, params.latency_test),
@@ -92,9 +94,9 @@ def verification(params):
         F.normalize(net(img1.to(device)))
         end_time = datetime.now()
         inf_times.append(end_time - start_time)
-    avg_time_single = sum(inf_times, start=timedelta()) / len(inf_times)
-    print(f'Inference for {params.weights} took pair: {avg_time_pair}, single: {avg_time_single}')
-    with open(os.path.join(params.output, 'timing.txt'), 'w') as file:
+    avg_time_single = sum(inf_times, timedelta()) / len(inf_times)
+    print(f'Inference for {params.proj_dir} took pair: {avg_time_pair}, single: {avg_time_single}')
+    with open(os.path.join(params.proj_dir, 'timing.txt'), 'w') as file:
         file.write(str(avg_time_pair)+'\n')
         file.write(str(avg_time_single)+'\n')
 
@@ -110,9 +112,12 @@ def identification(params):
         config = yaml.load(f, yaml.SafeLoader)
     # get model
     model = Model(config['model'])
-    model_path = glob.glob(f'{params.proj_dir}/checkpoint/model_*.pth')[0]
+    model_path = f'{params.proj_dir}/checkpoint/model_{params.model_steps}.pth'
+    if not os.path.exists(model_path):
+        print(f'No model found for {params.model_steps}, load first found matching "model_*.pth". Searched for: {model_path}')
+        model_path = glob.glob(f'{params.proj_dir}/checkpoint/model_*.pth')[0]
     print(f'Loading model from {model_path}')
-    model_dict = torch.load(model_path)
+    model_dict = torch.load(model_path, map_location='cuda')
     model.load_state_dict(model_dict)
     model.eval_mode()
 
@@ -157,8 +162,8 @@ def identification(params):
         all_indices.extend(pred_labels)
 
     # Open output file
-    os.makedirs(os.path.dirname(params.output), exist_ok=True)
-    with open(os.path.join(params.output, params.identification_file), 'w') as f:
+    os.makedirs(os.path.dirname(params.proj_dir), exist_ok=True)
+    with open(os.path.join(params.proj_dir, params.identification_file), 'w') as f:
         f.write(
             f"test_label,{','.join([f'predicted_label_{i}' for i in range(5)])},{','.join([f'similarity_{i}' for i in range(5)])}\n")
         for test_label, pred_label, sim in zip(all_labels, all_indices, all_sims):
@@ -174,6 +179,7 @@ if __name__ == "__main__":
     parser.add_argument("--img_identification", type=str, default='./data/split/identification.csv',
                         help="File containing a list of images files with corresponding label for identification")
     parser.add_argument("--latency_test", type=int, default=1000, help="Amount of images for the latency test")
+    parser.add_argument("--model_steps", type=int, default=40001, help="Models steps to load")
     parser.add_argument("--ident-general", action='store_true', help="Generalized model evaluation")
     args = parser.parse_args()
     verification(args)
