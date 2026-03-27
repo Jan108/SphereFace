@@ -4,11 +4,8 @@ set -eo pipefail
 ROOT_DIR='/mnt/data/afarec/code/face_recognition/SphereFace'
 DATA_DIR='/mnt/data/afarec/data/PetFace'
 
-for backbone in "64"; do
+for backbone in "20" "64"; do
   for cls in "bird" "cat" "dog" "small_animals"; do
-    if [ $backbone == "20" ]; then
-        continue
-    fi
     echo "Start evaluation for SphereFace with SFNet${backbone} for class ${cls}"
     PYTHONPATH=$ROOT_DIR:$PYTHONPATH \
       CUDA_VISIBLE_DEVICES=0 \
